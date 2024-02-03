@@ -38,9 +38,9 @@ class MediaAttachment < ApplicationRecord
   enum processing: { queued: 0, in_progress: 1, complete: 2, failed: 3 }, _prefix: true
 
   MAX_DESCRIPTION_LENGTH = 1_500
-  MAX_MEDIA_ATTACHMENTS = 4
+  MAX_MEDIA_ATTACHMENTS = 16
 
-  ALLOW_MIX_MEDIA = false
+  ALLOW_MIX_MEDIA = true
 
   IMAGE_LIMIT = 16.megabytes
   VIDEO_LIMIT = 99.megabytes
