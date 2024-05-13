@@ -183,16 +183,16 @@ class PostStatusService < BaseService
 
   def status_attributes
     if SUPPORT_BACKDATED_SPELL
-      pattern = /BD:(\d{8}:\d{6})/ # Regular expression for backdate spell
+      pattern = /BD(\d{8}\d{6})/ # Regular expression for backdate spell
       match = @text.match(pattern) # Match the pattern in the text
       created_at_override = nil
       override_text = @text
       if match
         extracted_text = match[1] # Extract the matched portion
         require 'date'
-        datetime = DateTime.strptime(extracted_text, '%Y%m%d:%H%M%S')
+        datetime = DateTime.strptime(extracted_text, '%Y%m%d%H%M%S')
         created_at_override = datetime.strftime('%Y-%m-%dT%H:%M:%S.%LZ')
-        override_text = @text.gsub(/\s*BD:#{Regexp.escape(extracted_text)}\s*/, ' ')
+        override_text = @text.gsub(/\s*BD#{Regexp.escape(extracted_text)}\s*/, ' ')
       end
     end
 
