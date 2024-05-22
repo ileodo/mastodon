@@ -12,6 +12,21 @@ class PublicFileServerMiddleware
   end
 
   def call(env)
+    # Moments Specific: Start
+    if ENV['PROTECT_PUBLIC_SYSTEM'] == 'true' && env['REQUEST_PATH'].start_with?(paperclip_root_url)
+      client_ip =
+        if env['HTTP_X_FORWARDED_FOR'].present?
+          env['HTTP_X_FORWARDED_FOR'].split(',').first.strip
+        else
+          env['REMOTE_ADDR']
+        end
+      # Use SessionActivation table to short cut
+      allowed_access = SessionActivation.exists?(ip: client_ip) || UserIp.exists?(ip: client_ip)
+      Rails.logger.info "#{client_ip} trying accessing #{env['REQUEST_PATH']}, allowed_access=#{allowed_access}"
+      return [403, { 'Content-Type' => 'text/plain' }, ['403 Forbidden']] unless allowed_access
+    end
+    # Moments Specific: End
+
     file = @file_handler.attempt(env)
 
     # If the request is not a static file, move on!
